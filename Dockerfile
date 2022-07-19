@@ -1,10 +1,20 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-RUN export LC_ALL=C.UTF-8
-RUN DEBIAN_FRONTEND=noninteractive
+ENV LC_ALL=C.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
+    libgtk2.0-0 \
+    libnotify-dev \
+    libgconf-2-4 \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    xvfb \
+    gpg-agent \
     sudo \
     autoconf \
     autogen \
@@ -28,7 +38,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
 
 # PHP
-RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php && apt-get update && apt-get install --no-install-recommends -y \
+RUN DEBIAN_FRONTEND=noninteractive LC_ALL=en_US.UTF-8 TZ=Etc/UTC add-apt-repository ppa:ondrej/php && apt-get update && apt-get install --no-install-recommends -y \
     php7.2 \
     php7.2-curl \
 #    php7.2-gd \
@@ -88,7 +98,7 @@ WORKDIR /app
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   && apt-get update \
-  && apt-get install -y google-chrome-unstable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst ttf-freefont \
+  && apt-get install -y google-chrome-unstable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
   --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
